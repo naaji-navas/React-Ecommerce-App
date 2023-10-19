@@ -1,37 +1,20 @@
 import React from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addItem, delItem } from '../redux/actions/index'
 import { GET_PRODCUCT_DETAILS_BY_ID } from "../config";
 import { useQuery } from "@apollo/client";
+import AgoraUIKit from "agora-react-uikit";
 
 const ProductDetail = () => {
+const [videoCall, setVideoCall] = useState(true);
+const rtcProps = {
+    appId: "0a41282530d4431baace34af264893f7",
+    channel: "testing",
+    token: "007eJxTYFg62SMmZOG8iM/LuT1M3xcHCa0TVDCufyJ0ou1agoFAxm0FBoNEE0MjCyNTY4MUExNjw6TExORUY5PENCMzEwtL4zTzFccEUxsCGRlmsDxgZGRgZGABYhCfCUwyg0kWMMnOUJJaXJKZl87AAABLBiFf",
+};
 
-
-    function extractTextFromDescription(description) {
-  try {
-    // Find the index of the "text" key
-    const textKeyIndex = description.indexOf('"text": ');
-
-    if (textKeyIndex !== -1) {
-      // Find the starting index of the text value
-      const textStartIndex = textKeyIndex + 9;
-
-      // Find the ending index of the text value
-      const textEndIndex = description.indexOf('", "type": "paragraph"', textStartIndex);
-
-      if (textEndIndex !== -1) {
-        // Extract and return the text
-        return description.substring(textStartIndex, textEndIndex);
-      }
-    }
-  } catch (error) {
-    console.error("Error extracting text from description:", error);
-  }
-
-  return ""; // Return an empty string if extraction fails
-}
 
     const [cartBtn, setCartBtn] = useState("Add to Cart")
     const { id } = useParams();
@@ -48,7 +31,9 @@ const ProductDetail = () => {
 // console.log(text);
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;
-
+const callbacks = {
+    EndCall: () => setVideoCall(false),
+};
     const handleCart = (product) => {
         if (cartBtn === "Add to Cart") {
             dispatch(addItem(product))
@@ -78,10 +63,20 @@ The saree comes with an unstitched blouse piece
 The blouse worn by the model might be for modelling purpose only. Check the image of the blouse piece to understand how the actual blouse piece looks like.</p> {/* Render the extracted text */}
                         <button onClick={()=>handleCart(product)} className="btn btn-outline-primary my-5">{cartBtn}</button>
                     </div>
+                      {
+                          videoCall && <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+                          (<AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />)
+                          </div>
+                      }
                 </div>
+
             </div>
+
         </>
     )
+
+
+
 }
 
 export default ProductDetail;
